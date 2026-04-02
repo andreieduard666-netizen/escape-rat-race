@@ -12,7 +12,7 @@ export function renderDashboard(container, game) {
       <div class="top-bar">
         <div class="top-bar-left">
           <span class="game-title-small">🐀 ESCAPE THE RAT RACE</span>
-          <span class="month-display">📅 Month ${status.month}</span>
+          <span class="month-display" style="font-size: 14px; font-weight: bold;">📅 MONTH ${status.month}</span>
         </div>
         <div class="top-bar-stats">
           <div class="stat-pill ${status.money >= 0 ? 'positive' : 'negative'}">

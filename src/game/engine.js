@@ -10,7 +10,7 @@ export class GameEngine {
     this.eventQueue = [];
     this.consecutiveEscapeMonths = 0;
     this.totalMonths = 0;
-    this.maxMonths = 120; // 10 year limit
+    this.maxMonths = 9999; // No limit - play until you win or go bankrupt
     
     // Callbacks for UI updates
     this.onStateChange = null;
@@ -36,16 +36,21 @@ export class GameEngine {
   
   // End current player's turn and process month
   endTurn() {
-    if (this.state !== 'playing') return;
+    if (this.state !== 'playing') {
+      console.log('Not playing, state:', this.state);
+      return;
+    }
     
     // Process month finances
     const monthResult = this.player.processMonth();
     this.totalMonths++;
     
+    console.log('Month processed:', this.player.month, 'Money:', this.player.money, 'State:', this.state);
+    
     // Check for random events
     this.rollForEvent();
     
-    // Check win condition
+    // Check win condition (3 consecutive months passive > expenses)
     if (this.player.hasEscaped()) {
       this.consecutiveEscapeMonths++;
       if (this.consecutiveEscapeMonths >= 3) {
@@ -57,17 +62,10 @@ export class GameEngine {
       this.consecutiveEscapeMonths = 0;
     }
     
-    // Check lose condition
+    // Check lose condition (bankrupt)
     if (this.player.isBankrupt()) {
       this.state = 'gameOver';
       if (this.onGameOver) this.onGameOver(this.player, 'bankruptcy');
-      return monthResult;
-    }
-    
-    // Check time limit
-    if (this.totalMonths >= this.maxMonths) {
-      this.state = 'gameOver';
-      if (this.onGameOver) this.onGameOver(this.player, 'timeout');
       return monthResult;
     }
     
